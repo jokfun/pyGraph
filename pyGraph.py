@@ -1,3 +1,4 @@
+
 from edges import Edges
 from vertices import Vertices 
 
@@ -6,14 +7,8 @@ class Graph:
 		self.oriented = oriented
 		self.weighted = weighted
 
-		self.edges = []
 		self.vertices = []
-
-	def getNumberEdges(self):
-		"""
-			Get the number of edges of the Graph
-		"""
-		return len(self.edges)
+		self.edges = []
 
 	def getNumberVertices(self):
 		"""
@@ -21,28 +16,34 @@ class Graph:
 		"""
 		return len(self.vertices)
 
-	def getEdges(self,name=True):
+	def getNumberEdges(self):
 		"""
-			Return all the names of the edges
+			Get the number of edges of the Graph
+		"""
+		return len(self.edges)
+
+	def getVertices(self,name=True):
+		"""
+			Return all the names of the vertices
 
 			Optinal parameters:
 			name : if True will return names, else return objects
 		"""
 		if name == True:
-			return [e.getName() for e in self.edges]
+			return [e.getName() for e in self.vertices]
 		else:
-			return self.edges
+			return self.vertices
 
-	def getVertices(self,name=True,get_object=False):
+	def getEdges(self,name=True,get_object=False):
 		"""
-			Return all the vertices
+			Return all the edges
 
 			Optinal parameters:
 			name : if True will return names of the edge, else return objects
-			get_object : if True, return the content of vertices, else return objects
+			get_object : if True, return the content of edges, else return objects
 		"""
 		out = []
-		for v in self.vertices:
+		for v in self.edges:
 			add = {}
 			if get_object:
 				add = v
@@ -53,45 +54,45 @@ class Graph:
 				else:
 					add["e1"] = v.e1
 					add["e2"] = v.e2
-				if v.getWeight()!=None:
+				if self.weighted:
 					add["weight"] = v.getWeight()
-				if v.getorientation()!=None:
-					add["orientation"] = v.georientation()
+				if self.oriented:
+					add["orientation"] = v.getOrientation()
 			out.append(add)
 		return out
 
-	def existingVertices(self,e1,e2):
+	def existingEdges(self,e1,e2):
 		"""
-			Test if a vertice exist in the Graph by giving the name of the edges
+			Test if a vertice_ exist in the Graph by giving the name of the vertices
 		"""
-		list_vertices = self.getVertices()
-		for element in list_vertices:
+		list_edges = self.getEdges()
+		for element in list_edges:
 			if element["e1"]==e1 and element["e2"]==e2:
 				return True
 		return False
 
-	def addEdges(self,list_edges=[]):
+	def addVertices(self,list_vertices=[]):
 		"""
-			Add new Edges in the Graph if names are not used
+			Add new vertices in the Graph if names are not used
 			
 			Optional parameters:
-			list_edges : a list of names for new edges
+			list_vertices : a list of names for new vertices
 		"""
-		existing_edges = self.getEdges()
-		for edge in list_edges:
-			if type(edge) == str:
-				if not(edge in existing_edges):
-					newEdge = Edges(edge)
-					self.edges.append(newEdge)
+		existing_vertices = self.getVertices()
+		for vertices in list_vertices:
+			if type(vertices) == str:
+				if not(vertices in existing_vertices):
+					newVertice = Vertices(vertices)
+					self.vertices.append(newVertice)
 				else:
-					print("Error : "+edge+" already exists.")
+					print("Error : "+vertices+" already exists.")
 			else:
-				print("Error : "+edge+" must be a String.")
+				print("Error : "+vertices+" must be a String.")
 			
 
-	def addVertices(self,e1,e2,weight=None,orientation=None):
+	def addEdges(self,e1,e2,weight=None,orientation=None):
 		"""
-			Add a new vertices in the Graph
+			Add a new edges in the Graph
 
 			Required parameters :
 			e1 : the first edge
@@ -101,9 +102,9 @@ class Graph:
 			weight : if weighted graph, must add a weight (default : None)
 			orientation : if oriented graph, must add an orientation (default : None)
 		"""
-		existing_edges = self.getEdges()
-		if e1 in existing_edges and e2 in existing_edges:
-			if not self.existingVertices(e1,e2):
+		existing_vertices = self.getVertices()
+		if e1 in existing_vertices and e2 in existing_vertices:
+			if not self.existingEdges(e1,e2):
 				if not self.weighted:
 					weight=None
 				else:
@@ -116,43 +117,43 @@ class Graph:
 					if orientation==None:
 						print("Error : Oriented Graph, must add an orientation.")
 						return -1
-				new_vertices = Vertices(e1,e2,weight,orientation)
-				self.vertices.append(new_vertices)
+				new_edges = Edges(e1,e2,weight,orientation)
+				self.edges.append(new_edges)
 			else:
 				print("Error : ["+e1+","+e2+"]"+" already exists.")
 		else:
 			print("Error : "+e1+" or "+e2+" doesn't exist.")
 
-	def getDegre(self,edge):
+	def getDegree(self,vertice):
 		"""
-			Get the degre of a specific edge
+			Get the degree of a specific vertice
 
 			Required parameter :
-			edge : the name of the edge
+			vertices : the name of the vertice
 		"""
 		count = 0
-		vertices = self.getVertices()
-		for ele in vertices:
-			if ele["e1"]==edge or ele["e2"]==edge:
+		edges = self.getEdges()
+		for edge in edges:
+			if edge["e1"]==vertice or edge["e2"]==vertice:
 				count+=1
 		return count
 
-	def getOrientedDegre(self,edge):
+	def getOrientedDegree(self,vertice):
 		"""
-			Get the input degre and the output degre of a specific edge
+			Get the input degree and the output degree of a specific edge
 			
 			Required parameter :
-			edge : the name of the edge
+			vertice : the name of the vertice
 		"""
 		if self.oriented==False:
 			return None
 		count_in = 0
 		count_out = 0
 
-		vertices = self.getVertices()
-		for ele in vertices:
-			if ele["e1"]==edge or ele["e2"]==edge:
-				if ele["orientation"] == edge:
+		edges = self.getedges()
+		for edge in edges:
+			if edge["e1"]==vertice or edge["e2"]==vertice:
+				if edge["orientation"] == vertice:
 					count_in+=1
 				else:
 					count_out+=1
