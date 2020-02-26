@@ -1,4 +1,5 @@
 import math
+import treeFunctions as tfun
 
 def shortestPath(graph,source,target=None):
 	"""
@@ -61,3 +62,21 @@ def shortestPath(graph,source,target=None):
 		return dist[target],path
 	else:
 		return dist,previous
+
+def isConnected(graph):
+	"""
+		Test if a graph is fully connected 
+			-> Each vertex has a path to any other vertex
+
+		Required parameters:
+		graph : a Graph oject
+	"""
+	all_vertices = graph.getVertices()
+	root = all_vertices[0]
+	cop_all_vertices = all_vertices[1:]
+	tree = tfun.buildTree(root,graph,cop_all_vertices)
+	count_nodes = tfun.countNodes(tree)
+	if count_nodes == len(all_vertices):
+		return True 
+	else:
+		return False 

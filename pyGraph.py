@@ -211,5 +211,3 @@ class Graph:
                     result[name1] = 1
                     result[name2] = 1
         return result
-
-
