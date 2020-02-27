@@ -49,11 +49,11 @@ class Graph:
                 add = v
             else:
                 if name==False:
-                    add["e1"] = v.e1.getName()
-                    add["e2"] = v.e2.getName()
+                    add["v1"] = v.v1.getName()
+                    add["v2"] = v.v2.getName()
                 else:
-                    add["e1"] = v.e1
-                    add["e2"] = v.e2
+                    add["v1"] = v.v1
+                    add["v2"] = v.v2
                 if self.weighted:
                     add["weight"] = v.getWeight()
                 if self.oriented:
@@ -61,13 +61,13 @@ class Graph:
             out.append(add)
         return out
 
-    def existingEdges(self,e1,e2):
+    def existingEdges(self,v1,v2):
         """
             Test if a vertice_ exist in the Graph by giving the name of the vertices
         """
         list_edges = self.getEdges()
         for element in list_edges:
-            if element["e1"]==e1 and element["e2"]==e2:
+            if element["v1"]==v1 and element["v2"]==v2:
                 return True
         return False
 
@@ -90,21 +90,21 @@ class Graph:
                 print("Error : "+vertex+" must be a String.")
             
 
-    def addEdges(self,e1,e2,weight=None,orientation=None):
+    def addEdges(self,v1,v2,weight=None,orientation=None):
         """
             Add a new edges in the Graph
 
             Required parameters :
-            e1 : the first edge
-            e2 : the second edge
+            v1 : the first edge
+            v2 : the second edge
 
             Optional parameters :
             weight : if weighted graph, must add a weight (default : None)
             orientation : if oriented graph, must add an orientation (default : None)
         """
         existing_vertices = self.getVertices()
-        if e1 in existing_vertices and e2 in existing_vertices:
-            if not self.existingEdges(e1,e2):
+        if v1 in existing_vertices and v2 in existing_vertices:
+            if not self.existingEdges(v1,v2):
                 if not self.weighted:
                     weight=None
                 else:
@@ -117,12 +117,46 @@ class Graph:
                     if orientation==None:
                         print("Error : Oriented Graph, must add an orientation.")
                         return -1
-                new_edges = Edges(e1,e2,weight,orientation)
+                new_edges = Edges(v1,v2,weight,orientation)
                 self.edges.append(new_edges)
             else:
-                print("Error : ["+e1+","+e2+"]"+" already exists.")
+                print("Error : ["+v1+","+v2+"]"+" already exists.")
         else:
-            print("Error : "+e1+" or "+e2+" doesn't exist.")
+            print("Error : "+v1+" or "+v2+" doesn't exist.")
+
+    def removeVertex(self,vertex):
+        """
+            Remove a specific vertex of the graph and all edges containing this vertex
+
+            Required paramters:
+            vertex : the vertex you want to remove
+        """
+        self.removeEdge(vertex)
+        pos = self.getVertices().index(vertex)
+        self.vertices = self.vertices[:pos] + self.vertices[pos+1:]
+
+
+    def removeEdge(self,v1,v2=None):
+        """
+            Remove edges containg specific vertex
+
+            Required parameters:
+            v1 : a vertex, if an edge contains v1 it'll be remove
+
+            Optional parameters:
+            v2 : a vertex (default None), remove all the edges connecting v1 and v2
+        """
+        all_edges = self.getEdges()
+        remove_list = []
+        for i in range(len(all_edges)):
+            edge = all_edges[i]
+            if v2==None:
+                if edge["v1"]==v1 or edge["v2"]==v1:
+                    remove_list.append(i)
+            else:
+                if (edge["v1"]==v1 and edge["v2"]==v2) or (edge["v1"]==v2 and edge["v2"]==v1):
+                    remove_list.append(i)
+        self.edges = [self.edges[i] for i in range(len(self.edges)) if not(i in remove_list)]
 
     def getDegree(self,vertex):
         """
@@ -134,7 +168,7 @@ class Graph:
         count = 0
         edges = self.getEdges()
         for edge in edges:
-            if edge["e1"]==vertex or edge["e2"]==vertex:
+            if edge["v1"]==vertex or edge["v2"]==vertex:
                 count+=1
         return count
 
@@ -152,7 +186,7 @@ class Graph:
 
         edges = self.getedges()
         for edge in edges:
-            if edge["e1"]==vertex or edge["e2"]==vertex:
+            if edge["v1"]==vertex or edge["v2"]==vertex:
                 if edge["orientation"] == vertex:
                     count_in+=1
                 else:
@@ -173,16 +207,16 @@ class Graph:
         result = []
         all_edges = self.getEdges()
         for edge in all_edges:
-            if edge["e1"] == vertex:
+            if edge["v1"] == vertex:
                 if not self.oriented:
-                    result.append(edge["e2"])
+                    result.append(edge["v2"])
                 elif self.oriented and edge["orientation"]!=verte:
-                    result.append(edge["e2"])
-            if edge["e2"] == vertex:
+                    result.append(edge["v2"])
+            if edge["v2"] == vertex:
                 if not self.oriented:
-                    result.append(edge["e1"])
+                    result.append(edge["v1"])
                 elif self.oriented and edge["orientation"]!=verte:
-                    result.append(edge["e1"])
+                    result.append(edge["v1"])
         return result
 
     def getAllDistances(self):
@@ -193,21 +227,21 @@ class Graph:
         all_edges = self.getEdges()
         for edge in all_edges:
             if self.oriented:
-                if edge["orientation"] == edge["e1"]:
-                    edge["e2"] + "," + edge["e1"]
+                if edge["orientation"] == edge["v1"]:
+                    edge["v2"] + "," + edge["v1"]
                 else : 
-                    edge["e1"] + "," + edge["e2"]
+                    edge["v1"] + "," + edge["v2"]
                 if self.weighted:
                     result[name] = edge["weight"]
                 else:
                     result[name] = 1
             else:
-                name1 = edge["e1"] + "," + edge["e2"]
-                name2 = edge["e2"] + "," + edge["e1"]
+                namv1 = edge["v1"] + "," + edge["v2"]
+                namv2 = edge["v2"] + "," + edge["v1"]
                 if self.weighted:
-                    result[name1] = edge["weight"]
-                    result[name2] = edge["weight"]
+                    result[namv1] = edge["weight"]
+                    result[namv2] = edge["weight"]
                 else:
-                    result[name1] = 1
-                    result[name2] = 1
+                    result[namv1] = 1
+                    result[namv2] = 1
         return result
