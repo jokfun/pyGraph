@@ -63,11 +63,11 @@ class Graph:
 
     def existingEdges(self,v1,v2):
         """
-            Test if a vertice_ exist in the Graph by giving the name of the vertices
+            Test if an edge exist in the Graph by giving the name of the vertices
         """
         list_edges = self.getEdges()
         for element in list_edges:
-            if element["v1"]==v1 and element["v2"]==v2:
+            if (element["v1"]==v1 and element["v2"]==v2) or (element["v1"]==v2 and element["v2"]==v1):
                 return True
         return False
 
@@ -245,3 +245,56 @@ class Graph:
                     result[namv1] = 1
                     result[namv2] = 1
         return result
+
+    def isRegular(self,oriented=False):
+        """
+            Test is a graph is regular (== all degrees are equal)
+
+            Optional parameters :
+            oriented : If the graph is oriented, test is all degrees in/out are equal
+        """
+        all_vertices = self.getVertices()
+        if oriented==False:
+            test_degre = self.getDegree(all_vertices[0])
+            for i in range(1,len(all_vertices)):
+                if test_degre != self.getDegree(all_vertices[i]):
+                    return False
+            return True
+        else:
+            if self.oriented:
+                test_degre_in,test_degre_out = self.getOrientedDegree(all_vertices[0])
+                for i in range(1,len(all_vertices)):
+                    degre_in,degre_out = self.getOrientedDegree(all_vertices[i])
+                    if test_degre_in != degre_in or test_degre_out!=degre_out:
+                        return False
+                return True
+            else:
+                print("Error : Asking isRegular with oriented parameter while Graph"+\
+                 " is not oriented, will return the default execution")
+                return self.isRegular()
+
+    def isComplete(self,oriented=False):
+        """
+            Test is a graph is complet (== each vertex has an edge with all other vertex)
+
+            Optional parameters :
+            oriented : If the graph is oriented, test is all degrees in/out are equal
+        """
+        size = self.getNumberVertices()-1
+        all_vertices = self.getVertices()
+        if oriented==False:
+            for i in range(0,len(all_vertices)):
+                if size != self.getDegree(all_vertices[i]):
+                    return False
+            return True
+        else:
+            if self.oriented:
+                for i in range(1,len(all_vertices)):
+                    degre_in,degre_out = self.getOrientedDegree(all_vertices[i])
+                    if size != degre_in or size!=degre_out:
+                        return False
+                return True
+            else:
+                print("Error : Asking isComplete with oriented parameter while Graph"+\
+                 " is not oriented, will return the default execution")
+                return self.isRegular()

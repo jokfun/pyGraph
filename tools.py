@@ -1,5 +1,6 @@
 import math
 import treeFunctions as tfun
+import externTools as ext
 
 def shortestPath(graph,source,target=None):
 	"""
@@ -79,4 +80,63 @@ def isConnected(graph):
 	if count_nodes == len(all_vertices):
 		return True 
 	else:
-		return False 
+		return False
+
+def findHamiltonian(graph,root,node,last_vertices,path,cycle):
+	"""
+		-- Recursive method --
+		Find a hamitonian path from the root
+
+		Required paramters :
+		root : the start of the path
+		node : the actual position of the search
+		last_vertices : last possible vertices you can explore
+		path : the built path
+		cycle : if you want to build a hamiltonian cycle
+	"""
+	if len(last_vertices)==0:
+		if cycle==True:
+			if root in graph.getNeighbors(node):
+				return True,path+[node,root]
+			else:
+				return False,None
+		else:
+			return True,path+[node]
+	path+=[node]
+	neighbors = [neighbor for neighbor in graph.getNeighbors(node) if neighbor in last_vertices]
+
+	if len(neighbors)==0:
+		return False,None
+
+	for neighbor in neighbors:
+		vertices = last_vertices.copy()
+		vertices.remove(neighbor)
+		return findHamiltonian(graph,root,neighbor,vertices,path,cycle)
+
+
+def hamiltonian(graph,cycle=False):
+	"""
+		Compute a hamiltonian path of a graph
+		If no path is found, will return an empty list
+
+		Required parameters :
+		graph : a Graph object
+
+		Optional parameters :
+		cycle : if you want to return a hamiltonian cycle
+	"""
+	if graph.getNumberVertices() > 2:
+		list_vertices = graph.getVertices()
+		vertex = list_vertices[0]
+		copy_vertices = list_vertices.copy()
+		copy_vertices.remove(vertex)
+		result,path = findHamiltonian(graph,vertex,vertex,copy_vertices,[],cycle)
+		if result == True:
+			return path
+		else:
+			return []
+	else:
+		print("Error : hamiltonian algorithm with a number of vertex > 2.")
+		return []
+
+
